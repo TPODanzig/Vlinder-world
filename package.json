@@ -1,0 +1,17 @@
+{
+  "name": "vlindertuin",
+  "version": "1.0.0",
+  "description": "Interactieve vlinder-tekentuin voor Raspberry Pi en web",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["vlinder", "drawing", "socket.io", "raspberry-pi"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.5.4"
+  }
+}

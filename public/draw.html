@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🦋 Vlindertuin - Tekenen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="draw-page">
+    <div class="draw-container">
+        <h2>✏️ Teken een vlinder</h2>
+        
+        <canvas id="drawingCanvas" width="600" height="400"></canvas>
+        
+        <div class="controls">
+            <div class="color-picker">
+                <button class="color-btn" data-color="#FF69B4" style="background-color: #FF69B4;" title="Roze"></button>
+                <button class="color-btn" data-color="#FFD700" style="background-color: #FFD700;" title="Goud"></button>
+                <button class="color-btn" data-color="#4169E1" style="background-color: #4169E1;" title="Blauw"></button>
+                <button class="color-btn" data-color="#32CD32" style="background-color: #32CD32;" title="Groen"></button>
+                <button class="color-btn" data-color="#FF8C00" style="background-color: #FF8C00;" title="Oranje"></button>
+                <button class="color-btn" data-color="#9932CC" style="background-color: #9932CC;" title="Paars"></button>
+            </div>
+            
+            <button id="clearBtn" class="btn btn-clear">🗑️ Wissen</button>
+            <button id="sendBtn" class="btn btn-send">🦋 Verzenden naar tuin</button>
+        </div>
+        
+        <div id="status" class="status"></div>
+        
+        <a href="index.html" class="btn-back">← Terug</a>
+    </div>
+    
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="draw.js"></script>
+</body>
+</html>
