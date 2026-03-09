@@ -1,53 +1,45 @@
 // Initialize Socket.io connection
 const socket = io();
 
-// Canvas setup
-const canvas = document.getElementById('gardenCanvas');
-const ctx = canvas.getContext('2d');
-const butterflyCounterDisplay = document.getElementById('butterflyCoun');
-
-// Garden settings
-const gardenBackground = '#2d5016'; // Dark green
 let butterflyCount = 0;
-
-// Array of butterfly emojis and flowers
-const butterflies = [];
-
-// Flower positions (emoji decorations)
-const flowers = [];
-
-// Resize canvas to fill window
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    drawGarden();
-}
-
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-function generateFlowers() {
-    flowers.length = 0;
-    for (let i = 0; i < 20; i++) {
-        flowers.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            emoji: '🌻',
-            size: 40 + Math.random() * 20
-        });
-    }
-}
-
-// Initialize
-generateFlowers();
 
 // Identify as garden client
 socket.emit('identify', { type: 'garden' });
 
-// Draw static garden background
-function drawGarden() {
-    ctx.fillStyle = gardenBackground;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+// Listen for new butterflies from the draw page
+socket.on('new_butterfly', (data) => {
+  butterflyCount++;
+  document.getElementById('count').textContent = butterflyCount;
+  
+  const img = document.createElement("img");
+  img.src = data.image;
+  img.className = "vlinder";
+  document.body.appendChild(img);
+
+  const startX = Math.random() * (window.innerWidth - 100);
+  const startY = Math.random() * (window.innerHeight - 100);
+  img.style.left = startX + "px";
+  img.style.top = startY + "px";
+
+  setTimeout(() => {
+    const endX = Math.random() * (window.innerWidth - 100);
+    const endY = Math.random() * (window.innerHeight - 100);
+    const duration = 4 + Math.random() * 3;
+    img.style.transition = `transform ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${duration}s`;
+    img.style.transform = `translate(${endX-startX}px, ${endY-startY}px) rotate(${Math.random()*360}deg)`;
+  }, 300);
+
+  const duration = 7 + Math.random() * 3;
+  setTimeout(() => {
+    img.style.opacity = '0';
+  }, duration * 800);
+
+  setTimeout(() => {
+    img.remove();
+    butterflyCount--;
+    document.getElementById('count').textContent = butterflyCount;
+  }, duration * 1000);
+});
     
     // Draw flowers
     flowers.forEach(flower => {
@@ -56,7 +48,7 @@ function drawGarden() {
         ctx.textBaseline = 'middle';
         ctx.fillText(flower.emoji, flower.x, flower.y);
     });
-}
+
 
 // Butterfly class
 class Butterfly {
