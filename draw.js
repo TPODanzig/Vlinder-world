@@ -1,6 +1,5 @@
-// Verbind met Raspberry Pi server
-const SOCKET_URL = 'http://10.17.36.8:3000';
-const socket = io(SOCKET_URL);
+// Verbind met Socket.io (automatisch naar RPi server)
+const socket = io();
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
