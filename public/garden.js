@@ -2,12 +2,10 @@
 const socket = io();
 
 let butterflyCount = 0;
+let displayedButterflies = new Set();
 
-// Identify as garden client
-socket.emit('identify', { type: 'garden' });
-
-// Listen for new butterflies from the draw page
-socket.on('new_butterfly', (data) => {
+// Helper function om vlinder weer te geven
+function displayButterfly(data) {
   butterflyCount++;
   document.getElementById('count').textContent = butterflyCount;
   
@@ -54,6 +52,35 @@ socket.on('new_butterfly', (data) => {
     butterflyCount--;
     document.getElementById('count').textContent = butterflyCount;
   }, duration * 1000);
+}
+
+// Laad vlinders van API bij pagina load
+async function loadButterflies() {
+  try {
+    const response = await fetch('/api/butterflies');
+    const butterflies = await response.json();
+    console.log(`📦 Loaded ${butterflies.length} butterflies from API`);
+    
+    // Toon laatste 10 vlinders
+    butterflies.slice(0, 10).forEach((butterfly, index) => {
+      setTimeout(() => displayButterfly(butterfly), index * 500);
+    });
+  } catch (err) {
+    console.error('Error loading butterflies:', err);
+  }
+}
+
+// Laad vlinders bij pagina start
+loadButterflies();
+
+// Identify as garden client
+socket.emit('identify', { type: 'garden' });
+
+// Luister voor NIEUWE vlinders real-time
+socket.on('new_butterfly', (data) => {
+  console.log('🦋 New butterfly received:', data.username);
+  displayButterfly(data);
+});
 });
     
     // Draw flowers
