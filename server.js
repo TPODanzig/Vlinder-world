@@ -2,23 +2,73 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const app = express();
 const server = http.createServer(app);
+
+// Middleware
+app.use(express.json({ limit: '50mb' }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// MongoDB Connection
+const MONGO_URI = 'mongodb+srv://lauradelissen:admin@vlinders.unu3yc0.mongodb.net/vlinders?retryWrites=true&w=majority';
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.log('❌ MongoDB error:', err));
+
+// Butterfly Schema
+const butterflySchema = new mongoose.Schema({
+  image: String,
+  color: String,
+  username: { type: String, default: 'Anonymous' },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Butterfly = mongoose.model('Butterfly', butterflySchema);
+
 const io = socketIo(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
   },
-  transports: ['websocket', 'polling'] // Fallback voor GitHub Pages
+  transports: ['websocket', 'polling']
 });
-
-// Serve static files from public folder
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Store connected clients
 let drawingClients = [];
 let gardenClients = [];
+
+// API Endpoints
+app.get('/api/butterflies', async (req, res) => {
+  try {
+    const butterflies = await Butterfly.find().sort({ createdAt: -1 }).limit(100);
+    res.json(butterflies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/butterflies/user/:username', async (req, res) => {
+  try {
+    const butterflies = await Butterfly.find({ username: req.params.username }).sort({ createdAt: -1 });
+    res.json(butterflies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/butterflies', async (req, res) => {
+  try {
+    const butterfly = new Butterfly(req.body);
+    await butterfly.save();
+    res.json(butterfly);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
@@ -36,10 +86,24 @@ io.on('connection', (socket) => {
   });
 
   // Receive drawing data from draw.html and broadcast to garden.html
-  socket.on('draw_butterfly', (data) => {
+  socket.on('draw_butterfly', async (data) => {
     console.log('🎨 Butterfly received from client:', socket.id);
     console.log('   Color:', data.color);
-    console.log('   Broadcasting to', gardenClients.length, 'garden clients');
+    console.log('   User:', data.username);
+    
+    // Sla vlinder op in MongoDB
+    try {
+      const butterfly = new Butterfly({
+        image: data.image,
+        color: data.color,
+        username: data.username
+      });
+      await butterfly.save();
+      console.log('💾 Butterfly saved to MongoDB!');
+    } catch (err) {
+      console.error('DB Error:', err);
+    }
+    
     // Broadcast to all garden clients
     io.emit('new_butterfly', data);
   });

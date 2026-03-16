@@ -15,27 +15,42 @@ socket.on('new_butterfly', (data) => {
   img.src = data.image;
   img.className = "vlinder";
   document.body.appendChild(img);
+  
+  // Voeg username label toe
+  const label = document.createElement("div");
+  label.textContent = data.username || 'Anonymous';
+  label.style.position = 'absolute';
+  label.style.fontSize = '12px';
+  label.style.color = data.color;
+  label.style.fontWeight = 'bold';
+  document.body.appendChild(label);
 
   const startX = Math.random() * (window.innerWidth - 100);
   const startY = Math.random() * (window.innerHeight - 100);
   img.style.left = startX + "px";
   img.style.top = startY + "px";
+  label.style.left = startX + "px";
+  label.style.top = (startY - 25) + "px";
 
   setTimeout(() => {
     const endX = Math.random() * (window.innerWidth - 100);
     const endY = Math.random() * (window.innerHeight - 100);
     const duration = 4 + Math.random() * 3;
     img.style.transition = `transform ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${duration}s`;
+    label.style.transition = `transform ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${duration}s`;
     img.style.transform = `translate(${endX-startX}px, ${endY-startY}px) rotate(${Math.random()*360}deg)`;
+    label.style.transform = `translate(${endX-startX}px, ${endY-startY}px) rotate(${Math.random()*360}deg)`;
   }, 300);
 
   const duration = 7 + Math.random() * 3;
   setTimeout(() => {
     img.style.opacity = '0';
+    label.style.opacity = '0';
   }, duration * 800);
 
   setTimeout(() => {
     img.remove();
+    label.remove();
     butterflyCount--;
     document.getElementById('count').textContent = butterflyCount;
   }, duration * 1000);

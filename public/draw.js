@@ -1,6 +1,17 @@
 // Verbind met Render backend
 const socket = io();
 
+// Get or ask for username
+let username = localStorage.getItem('username') || 'Anonymous';
+if (!localStorage.getItem('username')) {
+  const name = prompt('Wat is je naam?');
+  if (name) {
+    username = name;
+    localStorage.setItem('username', name);
+  }
+}
+console.log('User:', username);
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let drawing = false;
@@ -167,7 +178,7 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 
 document.getElementById("sendBtn").addEventListener("click", () => {
   const dataURL = canvas.toDataURL();
-  socket.emit("draw_butterfly", { image: dataURL, color: currentColor });
+  socket.emit("draw_butterfly", { image: dataURL, color: currentColor, username: username });
   document.getElementById("status").textContent = "✨ Vlinder gestuurd naar de tuin!";
   setTimeout(() => drawButterflyTemplate(), 500);
   setTimeout(() => document.getElementById("status").textContent = "", 3000);
