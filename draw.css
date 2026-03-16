@@ -1,0 +1,120 @@
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+}
+
+body { 
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  min-height: 100vh; 
+  font-family: 'Segoe UI', sans-serif; 
+  padding: 20px; 
+}
+
+.container { 
+  background: white; 
+  border-radius: 20px; 
+  padding: 30px; 
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+  text-align: center; 
+}
+
+h1 { 
+  color: #333; 
+  margin-bottom: 20px; 
+  font-size: 2em; 
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+}
+
+.canvas-container { 
+  margin: 20px 0; 
+  position: relative; 
+  display: inline-block; 
+}
+
+canvas { 
+  border: 3px solid #667eea; 
+  border-radius: 10px; 
+  cursor: crosshair; 
+  background: linear-gradient(to bottom right, #ffeaa7, #fab1a0); 
+  display: block; 
+  max-width: 100%; 
+}
+
+.controls { 
+  display: flex; 
+  gap: 10px; 
+  margin-top: 20px; 
+  flex-wrap: wrap; 
+  justify-content: center; 
+}
+
+button { 
+  padding: 12px 24px; 
+  font-size: 16px; 
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: all 0.3s; 
+  font-weight: bold; 
+}
+
+#sendBtn { 
+  background: #667eea; 
+  color: white; 
+  flex: 1; 
+  min-width: 150px; 
+}
+
+#sendBtn:hover { 
+  background: #764ba2; 
+  transform: scale(1.05); 
+}
+
+#sendBtn:active { 
+  transform: scale(0.98); 
+}
+
+#clearBtn { 
+  background: #ff7675; 
+  color: white; 
+  flex: 1; 
+  min-width: 150px; 
+}
+
+#clearBtn:hover { 
+  background: #d63031; 
+}
+
+.color-picker { 
+  display: flex; 
+  gap: 10px; 
+  margin: 20px 0; 
+  justify-content: center; 
+  flex-wrap: wrap; 
+}
+
+.color-option { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  cursor: pointer; 
+  border: 3px solid transparent; 
+  transition: all 0.2s; 
+}
+
+.color-option.active { 
+  border-color: #333; 
+  transform: scale(1.2); 
+}
+
+.status { 
+  margin-top: 15px; 
+  font-size: 14px; 
+  color: #666; 
+  min-height: 20px; 
+}
