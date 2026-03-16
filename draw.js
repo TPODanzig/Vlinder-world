@@ -1,5 +1,6 @@
-// Verbind met Socket.io (automatisch naar RPi server)
-const socket = io();
+// Verbind met Render backend
+const SOCKET_URL = 'https://vlinder-world.onrender.com';
+const socket = io(SOCKET_URL);
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
