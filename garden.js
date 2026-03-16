@@ -1,5 +1,5 @@
 // Verbind met Raspberry Pi server
-const SOCKET_URL = 'http://rpi.local:3000'; // of http://192.168.x.x:3000
+const SOCKET_URL = 'http://10.17.36.8:3000';
 const socket = io(SOCKET_URL);
 
 let butterflyCount = 0;

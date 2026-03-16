@@ -1,5 +1,5 @@
-// Verbind met Raspberry Pi server (verander 'rpi.local' naar je RPi hostname of IP)
-const SOCKET_URL = 'http://rpi.local:3000'; // of http://192.168.x.x:3000
+// Verbind met Raspberry Pi server
+const SOCKET_URL = 'http://10.17.36.8:3000';
 const socket = io(SOCKET_URL);
 
 const canvas = document.getElementById("canvas");
