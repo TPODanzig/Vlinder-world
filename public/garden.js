@@ -1,6 +1,5 @@
-// Verbind met Raspberry Pi server
-const SOCKET_URL = 'http://rpi.local:3000'; // of http://192.168.x.x:3000
-const socket = io(SOCKET_URL);
+// Verbind met Render backend
+const socket = io();
 
 let butterflyCount = 0;
 

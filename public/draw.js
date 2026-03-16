@@ -1,6 +1,5 @@
-// Verbind met Raspberry Pi server (verander 'rpi.local' naar je RPi hostname of IP)
-const SOCKET_URL = 'http://rpi.local:3000'; // of http://192.168.x.x:3000
-const socket = io(SOCKET_URL);
+// Verbind met Render backend
+const socket = io();
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
