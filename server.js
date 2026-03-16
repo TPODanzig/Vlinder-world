@@ -9,7 +9,8 @@ const io = socketIo(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
-  }
+  },
+  transports: ['websocket', 'polling'] // Fallback voor GitHub Pages
 });
 
 // Serve static files from public folder
@@ -52,7 +53,8 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🦋 Vlindertuin server running on port ${PORT}`);
   console.log(`Open http://localhost:${PORT} in your browser`);
+  console.log(`Local network: http://<your-ip>:${PORT}`);
 });
