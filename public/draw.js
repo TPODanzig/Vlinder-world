@@ -15,56 +15,9 @@ if (!localStorage.getItem("username")) {
   }
 }
 
-// Draw butterfly outline
-function drawButterflyOutline() {
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  
-  ctx.strokeStyle = "#ddd";
-  ctx.lineWidth = 1;
-  
-  // Linksboven vleugel
-  ctx.beginPath();
-  ctx.moveTo(centerX-40, centerY-10);
-  ctx.bezierCurveTo(centerX-120, centerY-40, centerX-150, centerY-100, centerX-100, centerY-130);
-  ctx.bezierCurveTo(centerX-80, centerY-110, centerX-70, centerY-60, centerX-60, centerY-20);
-  ctx.bezierCurveTo(centerX-80, centerY-30, centerX-100, centerY-20, centerX-40, centerY-10);
-  ctx.stroke();
-  
-  // Linksonder vleugel
-  ctx.beginPath();
-  ctx.moveTo(centerX-40, centerY+10);
-  ctx.bezierCurveTo(centerX-90, centerY+20, centerX-110, centerY+60, centerX-80, centerY+100);
-  ctx.bezierCurveTo(centerX-60, centerY+90, centerX-50, centerY+50, centerX-50, centerY+20);
-  ctx.bezierCurveTo(centerX-70, centerY+25, centerX-40, centerY+10, centerX-40, centerY+10);
-  ctx.stroke();
-  
-  // Lichaam
-  ctx.beginPath();
-  ctx.ellipse(centerX, centerY, 8, 60, 0, 0, Math.PI*2);
-  ctx.stroke();
-  
-  // Rechtsboven vleugel
-  ctx.beginPath();
-  ctx.moveTo(centerX+40, centerY-10);
-  ctx.bezierCurveTo(centerX+120, centerY-40, centerX+150, centerY-100, centerX+100, centerY-130);
-  ctx.bezierCurveTo(centerX+80, centerY-110, centerX+70, centerY-60, centerX+60, centerY-20);
-  ctx.bezierCurveTo(centerX+80, centerY-30, centerX+100, centerY-20, centerX+40, centerY-10);
-  ctx.stroke();
-  
-  // Rechtsonder vleugel
-  ctx.beginPath();
-  ctx.moveTo(centerX+40, centerY+10);
-  ctx.bezierCurveTo(centerX+90, centerY+20, centerX+110, centerY+60, centerX+80, centerY+100);
-  ctx.bezierCurveTo(centerX+60, centerY+90, centerX+50, centerY+50, centerX+50, centerY+20);
-  ctx.bezierCurveTo(centerX+70, centerY+25, centerX+40, centerY+10, centerX+40, centerY+10);
-  ctx.stroke();
-}
-
 // Clear canvas
 function drawButterflyTemplate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawButterflyOutline();
 }
 
 drawButterflyTemplate();
