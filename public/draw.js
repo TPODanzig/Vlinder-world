@@ -1,265 +1,139 @@
-const socket = io();
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let drawing = false;
 let currentColor = "#ff69b4";
 let lineWidth = 15;
 
-let username = localStorage.getItem('username') || 'Anonymous';
+let username = localStorage.getItem("username") || "Anonymous";
 
-let clippingPath;
-
-if (!localStorage.getItem('username')) {
-  const name = prompt('Wat is je naam?');
+if (!localStorage.getItem("username")) {
+  const name = prompt("Wat is je naam?");
   if (name) {
     username = name;
-    localStorage.setItem('username', name);
+    localStorage.setItem("username", name);
   }
 }
+
+let clippingPath;
 
 function createClippingPath() {
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  
   clippingPath = new Path2D();
-  
-  // Bovenvleugels (links)
-  clippingPath.bezierCurveTo(
-    centerX - 120, centerY - 40,
-    centerX - 150, centerY - 100,
-    centerX - 100, centerY - 130
-  );
-  clippingPath.bezierCurveTo(
-    centerX - 80, centerY - 110,
-    centerX - 70, centerY - 60,
-    centerX - 60, centerY - 20
-  );
-  clippingPath.bezierCurveTo(
-    centerX - 80, centerY - 30,
-    centerX - 100, centerY - 20,
-    centerX - 100, centerY + 10
-  );
-  clippingPath.bezierCurveTo(
-    centerX - 120, centerY - 10,
-    centerX - 130, centerY - 40,
-    centerX - 120, centerY - 40
-  );
-  
-  // Ondervleugels (links)
-  clippingPath.bezierCurveTo(
-    centerX - 90, centerY + 20,
-    centerX - 110, centerY + 60,
-    centerX - 80, centerY + 100
-  );
-  clippingPath.bezierCurveTo(
-    centerX - 60, centerY + 90,
-    centerX - 50, centerY + 50,
-    centerX - 50, centerY + 20
-  );
-  clippingPath.bezierCurveTo(
-    centerX - 70, centerY + 25,
-    centerX - 80, centerY + 20,
-    centerX - 90, centerY + 20
-  );
-  
-  // Lichaam
-  clippingPath.ellipse(centerX, centerY - 20, 12, 40, 0, 0, Math.PI * 2);
-  
-  // Bovenvleugels (rechts)
-  clippingPath.bezierCurveTo(
-    centerX + 120, centerY - 40,
-    centerX + 150, centerY - 100,
-    centerX + 100, centerY - 130
-  );
-  clippingPath.bezierCurveTo(
-    centerX + 80, centerY - 110,
-    centerX + 70, centerY - 60,
-    centerX + 60, centerY - 20
-  );
-  clippingPath.bezierCurveTo(
-    centerX + 80, centerY - 30,
-    centerX + 100, centerY - 20,
-    centerX + 100, centerY + 10
-  );
-  clippingPath.bezierCurveTo(
-    centerX + 120, centerY - 10,
-    centerX + 130, centerY - 40,
-    centerX + 120, centerY - 40
-  );
-  
-  // Ondervleugels (rechts)
-  clippingPath.bezierCurveTo(
-    centerX + 90, centerY + 20,
-    centerX + 110, centerY + 60,
-    centerX + 80, centerY + 100
-  );
-  clippingPath.bezierCurveTo(
-    centerX + 60, centerY + 90,
-    centerX + 50, centerY + 50,
-    centerX + 50, centerY + 20
-  );
-  clippingPath.bezierCurveTo(
-    centerX + 70, centerY + 25,
-    centerX + 80, centerY + 20,
-    centerX + 90, centerY + 20
-  );
+
+  // linksboven vleugel
+  clippingPath.bezierCurveTo(centerX-120, centerY-40, centerX-150, centerY-100, centerX-100, centerY-130);
+  clippingPath.bezierCurveTo(centerX-80, centerY-110, centerX-70, centerY-60, centerX-60, centerY-20);
+  clippingPath.bezierCurveTo(centerX-80, centerY-30, centerX-100, centerY-20, centerX-100, centerY+10);
+  clippingPath.bezierCurveTo(centerX-120, centerY-10, centerX-130, centerY-40, centerX-120, centerY-40);
+
+  // linksonder vleugel
+  clippingPath.bezierCurveTo(centerX-90, centerY+20, centerX-110, centerY+60, centerX-80, centerY+100);
+  clippingPath.bezierCurveTo(centerX-60, centerY+90, centerX-50, centerY+50, centerX-50, centerY+20);
+  clippingPath.bezierCurveTo(centerX-70, centerY+25, centerX-80, centerY+20, centerX-90, centerY+20);
+
+  // lichaam
+  clippingPath.ellipse(centerX, centerY-20, 12, 40, 0, 0, Math.PI*2);
+
+  // rechtsboven vleugel
+  clippingPath.bezierCurveTo(centerX+120, centerY-40, centerX+150, centerY-100, centerX+100, centerY-130);
+  clippingPath.bezierCurveTo(centerX+80, centerY-110, centerX+70, centerY-60, centerX+60, centerY-20);
+  clippingPath.bezierCurveTo(centerX+80, centerY-30, centerX+100, centerY-20, centerX+100, centerY+10);
+  clippingPath.bezierCurveTo(centerX+120, centerY-10, centerX+130, centerY-40, centerX+120, centerY-40);
+
+  // rechtsonder vleugel
+  clippingPath.bezierCurveTo(centerX+90, centerY+20, centerX+110, centerY+60, centerX+80, centerY+100);
+  clippingPath.bezierCurveTo(centerX+60, centerY+90, centerX+50, centerY+50, centerX+50, centerY+20);
+  clippingPath.bezierCurveTo(centerX+70, centerY+25, centerX+80, centerY+20, centerX+90, centerY+20);
 }
 
-// Functie om canvas leeg te maken
+createClippingPath();
+
+// Clear canvas
 function drawButterflyTemplate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-// Teken vlinder bij het laden
+drawButterflyTemplate();
 
-document.querySelectorAll(".color-option").forEach(el => {
-  el.addEventListener("click", (e) => {
-    document.querySelectorAll(".color-option").forEach(c => c.classList.remove("active"));
-    e.target.classList.add("active");
-    currentColor = e.target.dataset.color;
-  });
-});
-
-// Pointer events - vrij tekenen in de vlinder
-canvas.addEventListener("pointerdown", (e) => {
-  drawing = true;
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  
-  // Alleen tekenen als binnen vlinder
-  if (isPointInPath(x, y)) {
+// Tekenen functies
+function startDrawing(x, y) {
+  if (ctx.isPointInPath(clippingPath, x, y)) {
+    drawing = true;
     ctx.beginPath();
     ctx.moveTo(x, y);
   }
-});
+}
 
-canvas.addEventListener("pointermove", (e) => {
-  if(!drawing) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  
-  // Alleen tekenen als binnen vlinder
-  if (isPointInPath(x, y)) {
+function draw(x, y) {
+  if (!drawing) return;
+  if (ctx.isPointInPath(clippingPath, x, y)) {
+    ctx.lineTo(x, y);
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = lineWidth;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.lineTo(x, y);
     ctx.stroke();
   }
-});
-
-canvas.addEventListener("pointerup", () => {
-  drawing = false;
-});
-
-canvas.addEventListener("pointerleave", () => {
-  drawing = false;
-});
-
-// Helper: check of punt in vlinder zit (nu altijd true omdat geen template)
-function isPointInPath(x, y) {
-  return true;
 }
 
+function stopDrawing() {
+  drawing = false;
+}
 
+// Pointer events
+canvas.addEventListener("pointerdown", e => {
+  const rect = canvas.getBoundingClientRect();
+  startDrawing(e.clientX - rect.left, e.clientY - rect.top);
+});
+canvas.addEventListener("pointermove", e => {
+  const rect = canvas.getBoundingClientRect();
+  draw(e.clientX - rect.left, e.clientY - rect.top);
+});
+canvas.addEventListener("pointerup", stopDrawing);
+canvas.addEventListener("pointerleave", stopDrawing);
+
+// Touch events
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  startDrawing(touch.clientX - rect.left, touch.clientY - rect.top);
+}, false);
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  draw(touch.clientX - rect.left, touch.clientY - rect.top);
+}, false);
+canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(); }, false);
+
+// Clear knop
 document.getElementById("clearBtn").addEventListener("click", () => {
   drawButterflyTemplate();
-  document.getElementById("status").textContent = "Vlinder gereset!";
+  document.getElementById("status").textContent = "Canvas cleared!";
   setTimeout(() => document.getElementById("status").textContent = "", 2000);
 });
 
+// Send knop
 document.getElementById("sendBtn").addEventListener("click", () => {
   const dataURL = canvas.toDataURL();
-    fetch("mongodb+srv://lauradelissen:admin@vlinders.unu3yc0.mongodb.net/?appName=vlinders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        image: canvas.toDataURL(),
-        username: username
-      })
-    });
-
-  document.getElementById("status").textContent = "✨ Vlinder gestuurd naar de tuin!";
-  setTimeout(() => drawButterflyTemplate(), 500);
-  setTimeout(() => document.getElementById("status").textContent = "", 3000);
+  fetch("https://vlinder-world.onrender.com/butterfly", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: dataURL, username })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("status").textContent = "🦋 Vlinder gestuurd!";
+    drawButterflyTemplate();
+    setTimeout(() => document.getElementById("status").textContent = "", 3000);
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("status").textContent = "❌ Fout bij versturen!";
+    setTimeout(() => document.getElementById("status").textContent = "", 3000);
+  });
 });
 
-// Mouse fallback
-canvas.addEventListener("mousedown", (e) => {
-  drawing = true;
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  if (isPointInPath(x, y)) {
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  }
-});
-
-canvas.addEventListener("mousemove", (e) => {
-  if(!drawing) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  if (isPointInPath(x, y)) {
-    ctx.strokeStyle = currentColor;
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  }
-});
-
-canvas.addEventListener("mouseup", () => {
-  drawing = false;
-});
-
-canvas.addEventListener("mouseleave", () => {
-  drawing = false;
-});
-
-// Touch events
-canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  drawing = true;
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-  if (isPointInPath(x, y)) {
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  }
-}, false);
-
-canvas.addEventListener("touchmove", (e) => {
-  e.preventDefault();
-  if(!drawing) return;
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-  if (isPointInPath(x, y)) {
-    ctx.strokeStyle = currentColor;
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  }
-}, false);
-
-canvas.addEventListener("touchend", (e) => {
-  e.preventDefault();
-  drawing = false;
-}, false);
-
-drawButterflyTemplate();
 console.log("🦋 Vlinderkleuren gereed!");
