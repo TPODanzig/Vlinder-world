@@ -14,67 +14,75 @@ if (!localStorage.getItem("username")) {
   }
 }
 
-let clippingPath;
-
-function createClippingPath() {
+// Draw butterfly outline
+function drawButterflyOutline() {
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  clippingPath = new Path2D();
-
-  // linksboven vleugel
-  clippingPath.bezierCurveTo(centerX-120, centerY-40, centerX-150, centerY-100, centerX-100, centerY-130);
-  clippingPath.bezierCurveTo(centerX-80, centerY-110, centerX-70, centerY-60, centerX-60, centerY-20);
-  clippingPath.bezierCurveTo(centerX-80, centerY-30, centerX-100, centerY-20, centerX-100, centerY+10);
-  clippingPath.bezierCurveTo(centerX-120, centerY-10, centerX-130, centerY-40, centerX-120, centerY-40);
-
-  // linksonder vleugel
-  clippingPath.bezierCurveTo(centerX-90, centerY+20, centerX-110, centerY+60, centerX-80, centerY+100);
-  clippingPath.bezierCurveTo(centerX-60, centerY+90, centerX-50, centerY+50, centerX-50, centerY+20);
-  clippingPath.bezierCurveTo(centerX-70, centerY+25, centerX-80, centerY+20, centerX-90, centerY+20);
-
-  // lichaam
-  clippingPath.ellipse(centerX, centerY-20, 12, 40, 0, 0, Math.PI*2);
-
-  // rechtsboven vleugel
-  clippingPath.bezierCurveTo(centerX+120, centerY-40, centerX+150, centerY-100, centerX+100, centerY-130);
-  clippingPath.bezierCurveTo(centerX+80, centerY-110, centerX+70, centerY-60, centerX+60, centerY-20);
-  clippingPath.bezierCurveTo(centerX+80, centerY-30, centerX+100, centerY-20, centerX+100, centerY+10);
-  clippingPath.bezierCurveTo(centerX+120, centerY-10, centerX+130, centerY-40, centerX+120, centerY-40);
-
-  // rechtsonder vleugel
-  clippingPath.bezierCurveTo(centerX+90, centerY+20, centerX+110, centerY+60, centerX+80, centerY+100);
-  clippingPath.bezierCurveTo(centerX+60, centerY+90, centerX+50, centerY+50, centerX+50, centerY+20);
-  clippingPath.bezierCurveTo(centerX+70, centerY+25, centerX+80, centerY+20, centerX+90, centerY+20);
+  
+  ctx.strokeStyle = "#ddd";
+  ctx.lineWidth = 1;
+  
+  // Linksboven vleugel
+  ctx.beginPath();
+  ctx.moveTo(centerX-40, centerY-10);
+  ctx.bezierCurveTo(centerX-120, centerY-40, centerX-150, centerY-100, centerX-100, centerY-130);
+  ctx.bezierCurveTo(centerX-80, centerY-110, centerX-70, centerY-60, centerX-60, centerY-20);
+  ctx.bezierCurveTo(centerX-80, centerY-30, centerX-100, centerY-20, centerX-40, centerY-10);
+  ctx.stroke();
+  
+  // Linksonder vleugel
+  ctx.beginPath();
+  ctx.moveTo(centerX-40, centerY+10);
+  ctx.bezierCurveTo(centerX-90, centerY+20, centerX-110, centerY+60, centerX-80, centerY+100);
+  ctx.bezierCurveTo(centerX-60, centerY+90, centerX-50, centerY+50, centerX-50, centerY+20);
+  ctx.bezierCurveTo(centerX-70, centerY+25, centerX-40, centerY+10, centerX-40, centerY+10);
+  ctx.stroke();
+  
+  // Lichaam
+  ctx.beginPath();
+  ctx.ellipse(centerX, centerY, 8, 60, 0, 0, Math.PI*2);
+  ctx.stroke();
+  
+  // Rechtsboven vleugel
+  ctx.beginPath();
+  ctx.moveTo(centerX+40, centerY-10);
+  ctx.bezierCurveTo(centerX+120, centerY-40, centerX+150, centerY-100, centerX+100, centerY-130);
+  ctx.bezierCurveTo(centerX+80, centerY-110, centerX+70, centerY-60, centerX+60, centerY-20);
+  ctx.bezierCurveTo(centerX+80, centerY-30, centerX+100, centerY-20, centerX+40, centerY-10);
+  ctx.stroke();
+  
+  // Rechtsonder vleugel
+  ctx.beginPath();
+  ctx.moveTo(centerX+40, centerY+10);
+  ctx.bezierCurveTo(centerX+90, centerY+20, centerX+110, centerY+60, centerX+80, centerY+100);
+  ctx.bezierCurveTo(centerX+60, centerY+90, centerX+50, centerY+50, centerX+50, centerY+20);
+  ctx.bezierCurveTo(centerX+70, centerY+25, centerX+40, centerY+10, centerX+40, centerY+10);
+  ctx.stroke();
 }
-
-createClippingPath();
 
 // Clear canvas
 function drawButterflyTemplate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawButterflyOutline();
 }
 
 drawButterflyTemplate();
 
 // Tekenen functies
 function startDrawing(x, y) {
-  if (ctx.isPointInPath(clippingPath, x, y)) {
-    drawing = true;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  }
+  drawing = true;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
 }
 
 function draw(x, y) {
   if (!drawing) return;
-  if (ctx.isPointInPath(clippingPath, x, y)) {
-    ctx.lineTo(x, y);
-    ctx.strokeStyle = currentColor;
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.stroke();
-  }
+  ctx.lineTo(x, y);
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = lineWidth;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.stroke();
 }
 
 function stopDrawing() {
@@ -107,6 +115,15 @@ canvas.addEventListener("touchmove", e => {
   draw(touch.clientX - rect.left, touch.clientY - rect.top);
 }, false);
 canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(); }, false);
+
+// Kleurpicker
+document.querySelectorAll(".color-option").forEach(option => {
+  option.addEventListener("click", () => {
+    document.querySelectorAll(".color-option").forEach(o => o.classList.remove("active"));
+    option.classList.add("active");
+    currentColor = option.getAttribute("data-color");
+  });
+});
 
 // Clear knop
 document.getElementById("clearBtn").addEventListener("click", () => {
