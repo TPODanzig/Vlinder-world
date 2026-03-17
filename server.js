@@ -66,9 +66,3 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`GET /api/butterflies`);
   console.log(`POST /api/butterflies`);
 });
-      .toArray();
-    res.json(butterflies);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch butterflies" });
-  }
-});
