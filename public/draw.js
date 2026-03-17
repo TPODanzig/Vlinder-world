@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 let drawing = false;
 let currentColor = "#ff69b4";
 let lineWidth = 15;
+let isEraser = false;
 
 let username = localStorage.getItem("username") || "Anonymous";
 
@@ -78,11 +79,16 @@ function startDrawing(x, y) {
 function draw(x, y) {
   if (!drawing) return;
   ctx.lineTo(x, y);
-  ctx.strokeStyle = currentColor;
-  ctx.lineWidth = lineWidth;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.stroke();
+  
+  if (isEraser) {
+    ctx.clearRect(x - lineWidth/2, y - lineWidth/2, lineWidth, lineWidth);
+  } else {
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+  }
 }
 
 function stopDrawing() {
@@ -101,18 +107,22 @@ canvas.addEventListener("pointermove", e => {
 canvas.addEventListener("pointerup", stopDrawing);
 canvas.addEventListener("pointerleave", stopDrawing);
 
-// Touch events
+// Touch events - FIX for offset
 canvas.addEventListener("touchstart", e => {
   e.preventDefault();
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
-  startDrawing(touch.clientX - rect.left, touch.clientY - rect.top);
+  const x = touch.clientX - rect.left;
+  const y = touch.clientY - rect.top;
+  startDrawing(x, y);
 }, false);
 canvas.addEventListener("touchmove", e => {
   e.preventDefault();
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
-  draw(touch.clientX - rect.left, touch.clientY - rect.top);
+  const x = touch.clientX - rect.left;
+  const y = touch.clientY - rect.top;
+  draw(x, y);
 }, false);
 canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(); }, false);
 
@@ -122,14 +132,21 @@ document.querySelectorAll(".color-option").forEach(option => {
     document.querySelectorAll(".color-option").forEach(o => o.classList.remove("active"));
     option.classList.add("active");
     currentColor = option.getAttribute("data-color");
+    isEraser = false;
   });
 });
 
-// Clear knop
-document.getElementById("clearBtn").addEventListener("click", () => {
-  drawButterflyTemplate();
-  document.getElementById("status").textContent = "Canvas cleared!";
-  setTimeout(() => document.getElementById("status").textContent = "", 2000);
+// Eraser knop
+document.getElementById("eraserBtn").addEventListener("click", () => {
+  isEraser = !isEraser;
+  const btn = document.getElementById("eraserBtn");
+  if (isEraser) {
+    btn.textContent = "✏️ Terug naar tekenpen";
+    btn.style.background = "#ff6b6b";
+  } else {
+    btn.textContent = "🧹 Gum";
+    btn.style.background = "";
+  }
 });
 
 // Send knop
