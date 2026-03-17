@@ -1,16 +1,4 @@
-// Verbind met Render backend
 const socket = io();
-
-// Get or ask for username
-let username = localStorage.getItem('username') || 'Anonymous';
-if (!localStorage.getItem('username')) {
-  const name = prompt('Wat is je naam?');
-  if (name) {
-    username = name;
-    localStorage.setItem('username', name);
-  }
-}
-console.log('User:', username);
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -18,8 +6,17 @@ let drawing = false;
 let currentColor = "#ff69b4";
 let lineWidth = 15;
 
-// Clipping path voor de vlinder vorm
+let username = localStorage.getItem('username') || 'Anonymous';
+
 let clippingPath;
+
+if (!localStorage.getItem('username')) {
+  const name = prompt('Wat is je naam?');
+  if (name) {
+    username = name;
+    localStorage.setItem('username', name);
+  }
+}
 
 function createClippingPath() {
   const centerX = canvas.width / 2;
@@ -115,7 +112,6 @@ function drawButterflyTemplate() {
 }
 
 // Teken vlinder bij het laden
-drawButterflyTemplate();
 
 document.querySelectorAll(".color-option").forEach(el => {
   el.addEventListener("click", (e) => {
@@ -178,7 +174,17 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 
 document.getElementById("sendBtn").addEventListener("click", () => {
   const dataURL = canvas.toDataURL();
-  socket.emit("draw_butterfly", { image: dataURL, color: currentColor, username: username });
+    fetch("mongodb+srv://lauradelissen:admin@vlinders.unu3yc0.mongodb.net/?appName=vlinders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        image: canvas.toDataURL(),
+        username: username
+      })
+    });
+
   document.getElementById("status").textContent = "✨ Vlinder gestuurd naar de tuin!";
   setTimeout(() => drawButterflyTemplate(), 500);
   setTimeout(() => document.getElementById("status").textContent = "", 3000);
@@ -255,4 +261,5 @@ canvas.addEventListener("touchend", (e) => {
   drawing = false;
 }, false);
 
+drawButterflyTemplate();
 console.log("🦋 Vlinderkleuren gereed!");

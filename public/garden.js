@@ -81,7 +81,6 @@ socket.on('new_butterfly', (data) => {
   console.log('🦋 New butterfly received:', data.username);
   displayButterfly(data);
 });
-});
     
     // Draw flowers
     flowers.forEach(flower => {
