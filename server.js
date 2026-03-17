@@ -1,53 +1,71 @@
-const express = require("express");
-const cors = require("cors");
-const { MongoClient } = require("mongodb");
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
 
 const app = express();
-app.use(cors()); // Altijd CORS aan voor frontend
-app.use(express.json());
 
-// MongoDB connectie
-const uri = "mongodb+srv://lauradelissen:admin@vlinders.unu3yc0.mongodb.net";
-const client = new MongoClient(uri);
+// Middleware
+app.use(express.json({ limit: '50mb' }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-let collection;
+// MongoDB Connection
+const MONGO_URI = 'mongodb+srv://lauradelissen:admin@vlinders.unu3yc0.mongodb.net/?appName=vlinders';
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.log('❌ MongoDB error:', err));
 
-async function start() {
-  await client.connect();
-  const db = client.db("vlinders");
-  collection = db.collection("butterflies");
-  console.log("✅ MongoDB connected");
+// Butterfly Schema
+const butterflySchema = new mongoose.Schema({
+  image: String,
+  color: String,
+  username: { type: String, default: 'Anonymous' },
+  createdAt: { type: Date, default: Date.now }
+});
 
-  // Render zet PORT via env variable
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
+const Butterfly = mongoose.model('Butterfly', butterflySchema);
 
-start();
-
-// POST endpoint
-app.post("/butterfly", async (req, res) => {
+// API Endpoints
+app.get('/api/butterflies', async (req, res) => {
   try {
-    const { image, username } = req.body;
-    const result = await collection.insertOne({
-      image,
-      username,
-      createdAt: new Date()
-    });
-    res.json({ success: true, id: result.insertedId });
+    const butterflies = await Butterfly.find().sort({ createdAt: -1 });
+    res.json(butterflies);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to save butterfly" });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// GET endpoint voor teammate
-app.get("/butterflies", async (req, res) => {
+app.get('/api/butterflies/user/:username', async (req, res) => {
   try {
-    const butterflies = await collection
-      .find()
-      .sort({ createdAt: -1 })
-      .limit(10)
+    const butterflies = await Butterfly.find({ username: req.params.username }).sort({ createdAt: -1 });
+    res.json(butterflies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/butterflies', async (req, res) => {
+  try {
+    const butterfly = new Butterfly({
+      image: req.body.image,
+      color: req.body.color,
+      username: req.body.username
+    });
+    await butterfly.save();
+    console.log('💾 Butterfly saved:', butterfly.username);
+    res.json(butterfly);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🦋 Vlindertuin API running on port ${PORT}`);
+  console.log(`GET /api/butterflies`);
+  console.log(`POST /api/butterflies`);
+});
       .toArray();
     res.json(butterflies);
   } catch (err) {

@@ -1,8 +1,6 @@
-// Verbind met Render backend
-const socket = io();
+// Verbind met API (geen Socket.io nodig)
 
 let butterflyCount = 0;
-let displayedButterflies = new Set();
 
 // Helper function om vlinder weer te geven
 function displayButterfly(data) {
@@ -61,8 +59,8 @@ async function loadButterflies() {
     const butterflies = await response.json();
     console.log(`📦 Loaded ${butterflies.length} butterflies from API`);
     
-    // Toon laatste 10 vlinders
-    butterflies.slice(0, 10).forEach((butterfly, index) => {
+    // Toon alle vlinders
+    butterflies.forEach((butterfly, index) => {
       setTimeout(() => displayButterfly(butterfly), index * 500);
     });
   } catch (err) {
@@ -73,14 +71,11 @@ async function loadButterflies() {
 // Laad vlinders bij pagina start
 loadButterflies();
 
-// Identify as garden client
-socket.emit('identify', { type: 'garden' });
-
-// Luister voor NIEUWE vlinders real-time
-socket.on('new_butterfly', (data) => {
-  console.log('🦋 New butterfly received:', data.username);
-  displayButterfly(data);
-});
+// Refresh om nieuwe vlinders te laden
+setInterval(() => {
+  console.log('🔄 Refreshing butterflies...');
+  loadButterflies();
+}, 5000);
     
     // Draw flowers
     flowers.forEach(flower => {

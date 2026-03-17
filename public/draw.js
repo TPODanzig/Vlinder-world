@@ -118,10 +118,10 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 // Send knop
 document.getElementById("sendBtn").addEventListener("click", () => {
   const dataURL = canvas.toDataURL();
-  fetch("https://vlinder-world.onrender.com/butterfly", {
+  fetch("/api/butterflies", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image: dataURL, username })
+    body: JSON.stringify({ image: dataURL, color: currentColor, username })
   })
   .then(res => res.json())
   .then(data => {
