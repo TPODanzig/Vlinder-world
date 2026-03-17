@@ -42,7 +42,7 @@ canvas {
   cursor: crosshair; 
   background: linear-gradient(to bottom right, #ffeaa7, #fab1a0); 
   display: block; 
-  max-width: 100%; 
+  touch-action: none;
 }
 
 .controls { 

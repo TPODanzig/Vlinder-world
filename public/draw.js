@@ -95,33 +95,45 @@ function stopDrawing() {
   drawing = false;
 }
 
-// Pointer events
+// Pointer events - with proper scaling
 canvas.addEventListener("pointerdown", e => {
   const rect = canvas.getBoundingClientRect();
-  startDrawing(e.clientX - rect.left, e.clientY - rect.top);
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  startDrawing(x, y);
 });
 canvas.addEventListener("pointermove", e => {
   const rect = canvas.getBoundingClientRect();
-  draw(e.clientX - rect.left, e.clientY - rect.top);
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  draw(x, y);
 });
 canvas.addEventListener("pointerup", stopDrawing);
 canvas.addEventListener("pointerleave", stopDrawing);
 
-// Touch events - FIX for offset
+// Touch events - FIX for offset with proper scaling
 canvas.addEventListener("touchstart", e => {
   e.preventDefault();
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (touch.clientX - rect.left) * scaleX;
+  const y = (touch.clientY - rect.top) * scaleY;
   startDrawing(x, y);
 }, false);
 canvas.addEventListener("touchmove", e => {
   e.preventDefault();
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (touch.clientX - rect.left) * scaleX;
+  const y = (touch.clientY - rect.top) * scaleY;
   draw(x, y);
 }, false);
 canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(); }, false);
