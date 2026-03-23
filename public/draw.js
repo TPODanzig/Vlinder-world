@@ -58,6 +58,47 @@ function drawButterflyTemplate() {
 drawButterflyTemplate();
 const blankCanvasDataURL = canvas.toDataURL();
 
+let undoStack = [];
+let redoStack = [];
+
+function saveState() {
+  const currentState = canvas.toDataURL();
+  if (undoStack.length === 0 || undoStack[undoStack.length - 1] !== currentState) {
+    undoStack.push(currentState);
+    if (undoStack.length > 50) undoStack.shift();
+    redoStack = [];
+  }
+}
+
+function undo() {
+  if (undoStack.length > 0) {
+    redoStack.push(canvas.toDataURL());
+    const prevState = undoStack.pop();
+    const img = new Image();
+    img.src = prevState;
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+  }
+}
+
+function redo() {
+  if (redoStack.length > 0) {
+    undoStack.push(canvas.toDataURL());
+    const nextState = redoStack.pop();
+    const img = new Image();
+    img.src = nextState;
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+  }
+}
+
+document.getElementById('undoBtn').addEventListener('click', undo);
+document.getElementById('redoBtn').addEventListener('click', redo);
+
 // Tekenen functies
 let lastX = 0;
 let lastY = 0;
@@ -108,6 +149,7 @@ function stopDrawing() {
 
 // Pointer events - with proper scaling
 canvas.addEventListener("pointerdown", e => {
+  saveState();
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
@@ -129,6 +171,7 @@ canvas.addEventListener("pointerleave", stopDrawing);
 // Touch events - FIX for offset with proper scaling
 canvas.addEventListener("touchstart", e => {
   e.preventDefault();
+  saveState();
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -167,6 +210,7 @@ document.querySelectorAll(".color-option").forEach(option => {
 
 // Clear knop
 document.getElementById("clearBtn").addEventListener("click", () => {
+  saveState();
   drawButterflyTemplate();
   document.getElementById("status").textContent = "🗑️ Alles gewist!";
   setTimeout(() => document.getElementById("status").textContent = "", 2000);
