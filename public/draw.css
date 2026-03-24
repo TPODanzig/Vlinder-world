@@ -37,6 +37,7 @@ h1 {
   gap: 8px;
   justify-content: center;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .tool-option {
@@ -57,6 +58,10 @@ h1 {
   transform: scale(1.1);
   border-color: #667eea;
   box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.tool-option:active {
+  transform: scale(0.95);
 }
 
 .main-layout {
@@ -101,6 +106,10 @@ h1 {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+.color-option:active {
+  transform: scale(0.95);
+}
+
 .canvas-container { 
   position: relative; 
   display: inline-block;
@@ -125,8 +134,6 @@ canvas {
   touch-action: none;
   width: 600px;
   height: 400px;
-  max-width: 90vw;
-  max-height: 60vh;
 }
 
 canvas.drawing {
@@ -166,80 +173,161 @@ button {
   transform: scale(0.98); 
 }
 
-#eraserBtn { 
-  background: #95a5a6; 
-  color: white; 
+#clearBtn {
+  background: #ff6b6b;
+  color: white;
 }
 
-#eraserBtn:hover { 
-  background: #7f8c8d; 
+#clearBtn:hover {
+  background: #ee5a52;
 }
 
-.color-picker { 
-  display: flex; 
-  gap: 8px; 
-  margin: 10px 0; 
-  justify-content: center; 
-  flex-wrap: wrap; 
-}
-
-.color-option, .tool-option { 
-  width: 40px; 
-  height: 40px; 
-  border-radius: 50%; 
-  cursor: pointer; 
-  border: 3px solid transparent; 
-  transition: all 0.2s; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  user-select: none;
-}
-
-.color-option.active, .tool-option:active { 
-  border-color: #333; 
-  transform: scale(1.1); 
+#clearBtn:active {
+  transform: scale(0.98);
 }
 
 .status { 
   margin-top: 10px; 
-  font-size: 13px; 
-  color: #666; 
-  min-height: 18px; 
+  font-size: 16px; 
+  color: #333;
+  min-height: 20px; 
 }
 
-/* Mobile responsiveness */
-@media (max-width: 600px) {
-  body {
-    padding: 5px;
-  }
-  
+/* Mobile Responsiveness - Tablets & Large Phones */
+@media (max-width: 768px) {
   .container {
-    padding: 10px;
+    max-width: 95%;
+    padding: 12px;
   }
-  
+
   h1 {
     font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+
+  .tool-buttons {
     margin-bottom: 8px;
+    gap: 6px;
   }
-  
+
+  .tool-option {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .main-layout {
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .color-sidebar {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .color-option {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
   canvas {
-    border: 2px solid #667eea;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    max-width: 100%;
   }
-  
-  .color-option, .tool-option {
-    width: 30px;
-    height: 30px;
+
+  .canvas-container {
+    width: 100%;
   }
-  
+
+  .controls {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
   button {
     padding: 8px 12px;
     font-size: 13px;
     min-width: 100px;
   }
-  
+
+  .status {
+    font-size: 14px;
+  }
+}
+
+/* Mobile Responsiveness - Small Phones */
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+
+  .container {
+    max-width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  h1 {
+    font-size: 1em;
+    margin-bottom: 8px;
+  }
+
+  .tool-buttons {
+    margin-bottom: 6px;
+    gap: 4px;
+  }
+
+  .tool-option {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .main-layout {
+    margin: 10px 0;
+    gap: 8px;
+  }
+
+  .color-sidebar {
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .color-option {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  canvas {
+    border-radius: 8px;
+  }
+
+  .canvas-container {
+    width: 100%;
+  }
+
   .controls {
-    gap: 5px;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  button {
+    padding: 6px 10px;
+    font-size: 12px;
+    min-width: 85px;
+  }
+
+  .status {
+    font-size: 12px;
   }
 }
