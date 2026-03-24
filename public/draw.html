@@ -11,20 +11,23 @@
 <body>
   <div class="container">
     <h1>🦋 Maak je eigen vlinder</h1>
-    <div class="color-picker" style="justify-content: flex-start; padding-left: 10px;">
-      <div class="tool-option" id="undoBtn" style="background:transparent;" title="Ongedaan maken">↩️</div>
-      <div class="tool-option" id="redoBtn" style="background:transparent;" title="Opnieuw">↪️</div>
-      <div class="color-option" data-color="eraser" style="background:transparent; margin-right: auto;" title="Gum">🧽
-      </div>
-      <div class="color-option active" data-color="#ff69b4" style="background:#ff69b4;" title="Roze"></div>
-      <div class="color-option" data-color="#ffd700" style="background:#ffd700;" title="Goud"></div>
-      <div class="color-option" data-color="#00bfff" style="background:#00bfff;" title="Blauw"></div>
-      <div class="color-option" data-color="#00ff00" style="background:#00ff00;" title="Groen"></div>
-      <div class="color-option" data-color="#ff4500" style="background:#ff4500;" title="Oranje"></div>
-      <div class="color-option" data-color="#9370db" style="background:#9370db;" title="Paars"></div>
+    <div class="tool-buttons">
+      <div class="tool-option" id="undoBtn" title="Ongedaan maken">↩️</div>
+      <div class="tool-option" id="redoBtn" title="Opnieuw">↪️</div>
     </div>
-    <div class="canvas-container">
-      <canvas id="canvas" width="600" height="400"></canvas>
+    <div class="main-layout">
+      <div class="color-sidebar">
+        <div class="color-option" data-color="eraser" style="background:transparent;" title="Gum">🧽</div>
+        <div class="color-option active" data-color="#ff69b4" style="background:#ff69b4;" title="Roze"></div>
+        <div class="color-option" data-color="#ffd700" style="background:#ffd700;" title="Goud"></div>
+        <div class="color-option" data-color="#00bfff" style="background:#00bfff;" title="Blauw"></div>
+        <div class="color-option" data-color="#00ff00" style="background:#00ff00;" title="Groen"></div>
+        <div class="color-option" data-color="#ff4500" style="background:#ff4500;" title="Oranje"></div>
+        <div class="color-option" data-color="#9370db" style="background:#9370db;" title="Paars"></div>
+      </div>
+      <div class="canvas-container">
+        <canvas id="canvas" width="600" height="400"></canvas>
+      </div>
     </div>
     <div class="controls">
       <button id="clearBtn">🗑️ Wis alles</button>

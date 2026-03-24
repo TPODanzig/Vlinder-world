@@ -131,6 +131,7 @@ function drawSegment(x1, y1, x2, y2) {
 
 function startDrawing(x, y) {
   drawing = true;
+  canvas.classList.add("drawing");
   lastX = x;
   lastY = y;
   drawSegment(x, y, x, y);
@@ -145,6 +146,7 @@ function draw(x, y) {
 
 function stopDrawing() {
   drawing = false;
+  canvas.classList.remove("drawing");
 }
 
 // Pointer events - with proper scaling
@@ -218,7 +220,14 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 
 // Send knop
 document.getElementById("sendBtn").addEventListener("click", () => {
+  // Set white background temporarily for export
+  const originalBackground = canvas.style.background;
+  canvas.style.background = "white";
+  
   const dataURL = canvas.toDataURL();
+  
+  // Restore black background
+  canvas.style.background = originalBackground;
 
   if (dataURL === blankCanvasDataURL) {
     document.getElementById("status").textContent = "✏️ Teken eerst iets moois!";
