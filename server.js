@@ -69,11 +69,12 @@ app.post('/api/butterflies', async (req, res) => {
   }
 });
 
-app.delete('/api/butterflies', async (req, res) => {
+app.delete('/api/butterflies/:id', async (req, res) => {
   try {
-    const result = await Butterfly.deleteMany({});
-    console.log(`🗑️ Deleted ${result.deletedCount} butterflies`);
-    res.json({ message: `${result.deletedCount} butterflies deleted`, deleted: result.deletedCount });
+    const { id } = req.params;
+    const result = await Butterfly.deleteOne({ _id: id });
+    console.log(`🗑️ Deleted butterfly with id ${id}`);
+    res.json({ message: 'Butterfly deleted', deleted: result.deletedCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
