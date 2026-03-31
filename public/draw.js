@@ -1,9 +1,11 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let drawing = false;
+let baseColor = "#ff69b4";
 let currentColor = "#ff69b4";
 let lineWidth = 15;
 let isEraser = false;
+let colorVibrancy = 100;
 
 let username = localStorage.getItem("username") || "Anonymous";
 
@@ -194,6 +196,39 @@ canvas.addEventListener("touchmove", e => {
 }, false);
 canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(); }, false);
 
+document.getElementById('sizeSlider').addEventListener('input', (e) => {
+  lineWidth = parseInt(e.target.value, 10);
+  const newSize = 12 + (lineWidth - 1) * 0.5;
+  const scale = newSize / 20;
+  e.target.style.setProperty('--thumb-scale', scale);
+});
+
+document.getElementById('vibrancySlider').addEventListener('input', (e) => {
+  colorVibrancy = parseInt(e.target.value, 10);
+  updateCurrentColor();
+});
+
+function updateCurrentColor() {
+  if (isEraser) return;
+  
+  let hex = baseColor.replace(/^#/, '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+  
+  let finalR = Math.floor(r * (colorVibrancy / 100));
+  let finalG = Math.floor(g * (colorVibrancy / 100));
+  let finalB = Math.floor(b * (colorVibrancy / 100));
+  
+  currentColor = `#${(1 << 24 | finalR << 16 | finalG << 8 | finalB).toString(16).slice(1)}`;
+  
+  const vibrancySlider = document.getElementById('vibrancySlider');
+  vibrancySlider.style.setProperty('--thumb-color', baseColor);
+  vibrancySlider.style.setProperty('--current-vibrancy-color', currentColor);
+}
+
 // Kleurpicker
 document.querySelectorAll(".color-option").forEach(option => {
   option.addEventListener("click", () => {
@@ -205,7 +240,8 @@ document.querySelectorAll(".color-option").forEach(option => {
       isEraser = true;
     } else {
       isEraser = false;
-      currentColor = color;
+      baseColor = color;
+      updateCurrentColor();
     }
   });
 });

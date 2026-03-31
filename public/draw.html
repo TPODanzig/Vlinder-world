@@ -28,6 +28,20 @@
       <div class="canvas-container">
         <canvas id="canvas" width="600" height="400"></canvas>
       </div>
+      <div class="sliders-sidebar">
+        <div class="slider-container" title="Kwast grootte">
+          <label for="sizeSlider">📏</label>
+          <div class="slider-wrapper">
+            <input type="range" id="sizeSlider" min="1" max="50" value="15" class="custom-slider" style="--thumb-scale: 0.95;">
+          </div>
+        </div>
+        <div class="slider-container" title="Kleur donkerte">
+          <label for="vibrancySlider">🌗</label>
+          <div class="slider-wrapper">
+            <input type="range" id="vibrancySlider" min="0" max="100" value="100" class="custom-slider" style="--thumb-color: #ff69b4; --current-vibrancy-color: #ff69b4;">
+          </div>
+        </div>
+      </div>
     </div>
     <div class="controls">
       <button id="clearBtn">🗑️ Wis alles</button>
