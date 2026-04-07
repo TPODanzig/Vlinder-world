@@ -9,12 +9,9 @@ let colorVibrancy = 100;
 
 let username = localStorage.getItem("username") || "Anonymous";
 
-if (!localStorage.getItem("username")) {
-  const name = prompt("Wat is je naam?");
-  if (name) {
-    username = name;
-    localStorage.setItem("username", name);
-  }
+const name = prompt("Wat is je naam?");
+if (name) {
+  username = name;
 }
 
 let clippingPath;
