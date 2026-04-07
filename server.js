@@ -39,6 +39,7 @@ const Butterfly = mongoose.model('Butterfly', butterflySchema);
 function moderateImage(dataURL) {
   return new Promise((resolve) => {
     const py = spawn('python3', ['moderation.py', dataURL]);
+    console.log('🐍 Spawning Python moderation check...');
 
     let output = '';
     let error = '';
@@ -50,6 +51,9 @@ function moderateImage(dataURL) {
       if (code !== 0 || error) {
         // If moderation fails for any reason, let it through
         console.warn('⚠️ Moderation script error:', error);
+        console.log('🔍 Python output:', output);
+        console.log('🔍 Python error:', error);
+        console.log('🔍 Exit code:', code);
         resolve({ safe: true, reason: null });
         return;
       }
