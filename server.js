@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { spawn } = require('child_process');
 
 const app = express();
 
@@ -27,20 +28,71 @@ const butterflySchema = new mongoose.Schema({
   image: String,
   color: String,
   username: { type: String, default: 'Anonymous' },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  flagged: { type: Boolean, default: false },
+  flagReason: { type: String, default: null }
 });
 
 const Butterfly = mongoose.model('Butterfly', butterflySchema);
+
+// Moderation helper — calls moderation.py and returns { safe, reason }
+function moderateImage(dataURL) {
+  return new Promise((resolve) => {
+    const py = spawn('python3', ['moderation.py', dataURL]);
+    console.log('🐍 Spawning Python moderation check...');
+
+    let output = '';
+    let error = '';
+
+    py.stdout.on('data', (data) => { output += data.toString(); });
+    py.stderr.on('data', (data) => { error += data.toString(); });
+
+    py.on('close', (code) => {
+      if (code !== 0 || error) {
+        // If moderation fails for any reason, let it through
+        console.warn('⚠️ Moderation script error:', error);
+        console.log('🔍 Python output:', output);
+        console.log('🔍 Python error:', error);
+        console.log('🔍 Exit code:', code);
+        resolve({ safe: true, reason: null });
+        return;
+      }
+
+      const trimmed = output.trim();
+      if (trimmed === 'SAFE') {
+        resolve({ safe: true, reason: null });
+      } else {
+        // Output format is: UNSAFE:<reason>
+        const reason = trimmed.startsWith('UNSAFE:')
+          ? trimmed.slice(7)
+          : 'content policy violation';
+        resolve({ safe: false, reason });
+      }
+    });
+
+    // If Python takes more than 10 seconds, let it through
+    setTimeout(() => resolve({ safe: true, reason: null }), 10000);
+  });
+}
 
 // API Endpoints
 app.get('/api/butterflies', async (req, res) => {
   try {
     console.log('📥 GET /api/butterflies request received');
-    const butterflies = await Butterfly.find().sort({ createdAt: -1 });
+    const butterflies = await Butterfly.find({ flagged: { $ne: true } }).sort({ createdAt: -1 });
     console.log(`✅ Found ${butterflies.length} butterflies`);
     res.json(butterflies);
   } catch (err) {
     console.error('❌ Error fetching butterflies:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/butterflies/flagged', async (req, res) => {
+  try {
+    const butterflies = await Butterfly.find({ flagged: true }).sort({ createdAt: -1 });
+    res.json(butterflies);
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
@@ -56,14 +108,37 @@ app.get('/api/butterflies/user/:username', async (req, res) => {
 
 app.post('/api/butterflies', async (req, res) => {
   try {
-    const butterfly = new Butterfly({
-      image: req.body.image,
-      color: req.body.color,
-      username: req.body.username
-    });
+    const { image, color, username } = req.body;
+
+    // Run moderation check
+    const moderation = await moderateImage(image);
+
+    if (!moderation.safe) {
+      // Save to DB as flagged so mods can review it
+      const flagged = new Butterfly({
+        image,
+        color,
+        username,
+        flagged: true,
+        flagReason: moderation.reason
+      });
+      await flagged.save();
+      console.log(`🚫 Flagged submission from ${username}: ${moderation.reason}`);
+
+      // Tell the user why it was blocked
+      return res.status(451).json({
+        blocked: true,
+        reason: moderation.reason,
+        message: `Je vlinder is geblokkeerd: ${moderation.reason}. Je inzending wordt bekeken door een moderator. Je kunt je tekening aanpassen en opnieuw proberen.`
+      });
+    }
+
+    // Safe — save normally
+    const butterfly = new Butterfly({ image, color, username });
     await butterfly.save();
-    console.log('💾 Butterfly saved:', butterfly.username);
+    console.log('💾 Butterfly saved:', username);
     res.json(butterfly);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
